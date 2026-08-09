@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="index.css" />
-    <link rel="stylesheet" href="./contactpage/contact.css">
+    <link rel="stylesheet" href="../index.css" />
+    <link rel="stylesheet" href="contact.css">
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300&display=swap" rel="stylesheet"/>
@@ -14,22 +14,22 @@
 <body>
     <nav class="navbar">
         <div>
-            <p class="logo"><a href="/"><img src="logo.png" alt="LOGO" width="70px" height="70px" ></a></p>
+            <p class="logo"><a href="/"><img src="../logo.png" alt="LOGO" width="70px" height="70px" ></a></p>
         </div>
         <ul >
-            <li><a href="/">Home</a></li>
-            <li><a href="/about">About</a></li>
-            <li><a href="/contact">Contact</a></li>
-            <li><a href="/content">Courses</a></li>
+            <li><a href="../homepage/index.html">Home</a></li>
+            <li><a href="../aboutpage/about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="../contentpage/content.html">Courses</a></li>
             <li><a href="/blog">Blog</a></li>
         </ul>
         <div class="login">
-            <a href="/signin"><button id="signin">signin</button></a><a href="/signup"><button id="signup">signup</button></a>
+            <a href="../signinpage/signin.html"><button id="signin">signin</button></a><a href="../signuppage/signup.html"><button id="signup">signup</button></a>
         </div>
     </nav>
     <div class="contactpost">
         <h1 class="contacth">Contact Us</h1>
-        <form action="/contact" method="post" class="contactform">
+        <form action="../contactpage/contact.html" method="post" class="contactform">
             <label for="name">Name</label>
             <input type="text" name="name" placeholder="name" class="name" required>
             <label for="email">Email</label>
@@ -41,7 +41,7 @@
             <input type="submit" value="submit" name-="submit" class="submit_contact">
         </form>
     </div>
-    <script src="indexforother.js"></script>
+    <script src="../indexforother.js"></script>
     <script>
 
         const form = document.querySelector("form");
@@ -54,7 +54,7 @@
          const telephone = form.telephone.value;
          const textarea = form.textarea.value;
         try{
-            const res = await fetch('/contact',{
+            const res = await fetch('/contactpage',{
                 method : 'POST',
                 body : JSON.stringify({name:name, email:email, telephone:telephone, textarea:textarea}),
                 headers : {'content-type':'application/json'}

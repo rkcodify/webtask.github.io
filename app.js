@@ -7,13 +7,13 @@ const bodyParser = require("body-parser");
 const authroutes = require("./routes/authroutes")
 const cookieparser = require("cookie-parser");
 const { requireAuth } = require("./middleware/authmiddleware");
-const databaseschema = require("./models/databaseschema");
+const databaseschema = require("./models/databaseschema.js");
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 process.env.SECRET_KEY;
 
 const app = express();
-const port = 80;
+const port = 5500;
 
 // middleware
 app.use(cors());
@@ -21,11 +21,21 @@ app.use(cookieparser());
 app.use(bodyParser.urlencoded({ extended: false }));// parse application/x-www-form-urlencoded
 app.use(bodyParser.json());// parse application/json
 app.use(express.static(path.join(__dirname, "views")));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 //making database rk
-mongoose.connect("mongodb://127.0.0.1:27017/rk", {
+// mongoose.connect("mongodb://127.0.0.1:27017/rk", {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+// }); 
+mongoose.connect("mongodb+srv://xxrama_db_user:piGZq5v6gRaYhyqv@cluster0.gfkv8gk.mongodb.net/?appName=Cluster0",{
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  // useCreateIndex: true,
+  // useFindAndModify: false,
+}).then(()=>{
+  console.log("connected to mongodb atlas")
 }); 
 
 var db = mongoose.connection;
@@ -47,8 +57,10 @@ app.post("/", (req, res, next) => {
   // // to the API (e.g. in case you use sessions)
   res.setHeader('Access-Control-Allow-Credentials', true);
   const token = req.cookies.jwt;
+  console.log(token);
   //check token exist or not
   if(token){
+    console.log(token);
     jwt.verify(token,process.env.SECRET_KEY,async(err, decodedToken)=>{
       if(err){
         console.log(err.message)
@@ -59,7 +71,6 @@ app.post("/", (req, res, next) => {
           let user = await databaseschema.findById(decodedToken.id);
           res.locals.user = JSON.stringify(user);
           res.json({"user":user.email});
-          next();
       }
     })
   }

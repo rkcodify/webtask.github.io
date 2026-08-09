@@ -31,21 +31,27 @@ const signupschema = new mongoose.Schema(
     },
     updated:{
       type: Date, default: Date.now 
-},  
+    },  
 });
 
 //creating a function for login form so that we can call it from signin authorisation
-signupschema.statics.login = async function(email,password){
-  const user = await this.findOne({email});
-  if (user) {
-    const auth = await bcrypt.compare(password, user.password)
-    if(auth){
-      return user;
+signupschema.statics.login = async function(email, password) {
+    const user = await this.findOne({
+        email: email.toLowerCase()
+    });
+
+    if (!user) {
+        throw Error("Incorrect Email");
     }
-    throw Error("Incorrect Password");
-  }
-  throw Error("Incorrect Email");
-}
+
+    const auth = await bcrypt.compare(password, user.password);
+
+    if (!auth) {
+        throw Error("Incorrect Password");
+    }
+
+    return user;
+};
 
 //fire before adding collection to the database mainly used in password hashing
 signupschema.pre('save',async function (next) {    //this is moongoose hooks 

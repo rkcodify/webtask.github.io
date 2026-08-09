@@ -2,28 +2,32 @@ const cookieparser = require("cookie-parser");
 const jwt = require('jsonwebtoken');
 const path = require("path");
 
-const requireAuth = (res, req, next)=>{
+const requireAuth = (req, res, next) => {
 
-  const token = req.cookies.jwt;
-  console.log(token)
+    const token = req.cookies.jwt;
 
-  //check token exist or not
+    if (token) {
 
-  if(token){
-    jwt.verify(token,'ramakantpandeyramakantpandeyramakant',(err, decodedToken)=>{
-      if(err){
-        res.redirect('/');
-      }
-      else{
-          console.log(decodedToken);
-          next();
-      }
-    })
-  }
-  else{
-    console.log(err.message);
-    return res.redirect('/');
-  }
-}
+        jwt.verify(
+            token,
+            process.env.SECRET_KEY,
+            (err, decodedToken) => {
+
+                if (err) {
+                    console.log("Invalid token");
+                    return res.redirect("/");
+                }
+
+                console.log(decodedToken);
+                next();
+            }
+        );
+
+    } else {
+
+        console.log("No JWT token found");
+        return res.redirect("/");
+    }
+};
 
 module.exports = { requireAuth };
