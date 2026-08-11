@@ -9,12 +9,11 @@ const cookieparser = require("cookie-parser");
 const { requireAuth } = require("./middleware/authmiddleware");
 const databaseschema = require("./models/databaseschema.js");
 const jwt = require('jsonwebtoken');
+
 require('dotenv').config();
-process.env.SECRET_KEY;
 
 const app = express();
-const port = 5500;
-
+const port = process.env.PORT || 5500;
 // middleware
 app.use(cors());
 app.use(cookieparser());
@@ -29,15 +28,20 @@ app.use(express.urlencoded({ extended: false }));
 //   useNewUrlParser: true,
 //   useUnifiedTopology: true,
 // }); 
-mongoose.connect("mongodb+srv://xxrama_db_user:piGZq5v6gRaYhyqv@cluster0.gfkv8gk.mongodb.net/?appName=Cluster0",{
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  // useCreateIndex: true,
-  // useFindAndModify: false,
-}).then(()=>{
-  console.log("connected to mongodb atlas")
-}); 
+// =========================
+// MongoDB
+// =========================
 
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => {
+        console.log("connected to mongodb atlas");
+    })
+    .catch((err) => {
+        console.error("MongoDB connection error:", err);
+    });
+
+
+// =========================
 var db = mongoose.connection;
 
 const homepage = fs.readFileSync("./views/homepage/index.html")
@@ -100,7 +104,7 @@ app.get("/contact", (req, res) => {
 app.use(authroutes);
 
 // to access our content user must has to be logged in
-app.get("/content",(req, res) => {
+app.get("/content", requireAuth, (req, res) => {
   res.setHeader("Content-Type","text/html");
 
   const token = req.cookies.jwt;
@@ -144,6 +148,44 @@ app.get("/logout", (req, res, next) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`app executed successfully || Port ${port}`);
+app.get("/user", async (req, res) => {
+
+    const token = req.cookies.jwt;
+
+    if (!token) {
+        return res.json({ user: null });
+    }
+
+    jwt.verify(
+        token,
+        process.env.SECRET_KEY,
+        async (err, decodedToken) => {
+
+            if (err) {
+                return res.json({ user: null });
+            }
+
+            try {
+                const user = await databaseschema.findById(
+                    decodedToken.id
+                );
+
+                if (!user) {
+                    return res.json({ user: null });
+                }
+
+                res.json({
+                    user: user.username
+                });
+
+            } catch (error) {
+                console.log(error);
+                res.json({ user: null });
+            }
+        }
+    );
+}); 
+
+app.listen(port, "0.0.0.0", () => {
+    console.log(`app executed successfully || Port ${port}`);
 });
