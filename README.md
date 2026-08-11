@@ -1,6 +1,6 @@
 # RkCoDiFy
 
-A full-stack coding education website built with **Node.js, Express.js, MongoDB Atlas, HTML, CSS, and JavaScript**.
+A full-stack coding demo education website built with **Node.js, Express.js, MongoDB Atlas, HTML, CSS, and JavaScript**.
 
 RkCoDiFy is designed as a learning platform where users can explore programming courses, create accounts, sign in, and access protected course content.
 
